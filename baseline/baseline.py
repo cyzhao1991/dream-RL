@@ -1,0 +1,53 @@
+import tensorflow as tf
+import numpy as np
+
+class Baseline(object):
+	def __init__(self, sess, pms):
+		self.sess = sess
+		self.pms = pms
+		self.var_list = []
+
+	def fit(self, path):
+		raise NotImplementedError
+
+	def predict(self, path):
+		raise NotImplementedError
+
+class BaselineZeros(Baseline):
+	def __init__(self, sess, pms):
+		super(BaselineZeros, self).__init__(sess, pms)
+		self.var_list = [v for v in tf.trainable_variables() if v.name.startswith('self.pms.name')]
+
+	def fit(self, path):
+		return None
+
+	def predict(self, path):
+		return np.zeros(len(path['rewards']))
+
+'''
+TO_DO
+
+# class Baseline_FCNN(Baseline):
+# 	def __init__(self, net, sess, pms):
+# 		super(Baseline_FCNN, self).__init__(self, sess, pms)
+# 		self.net = net
+
+# 		self.input_ph = self.net.input
+# 		self.output_net = self.net.output
+# 		self.build_net()
+
+# 	def build_net(self):
+# 		with tf.name_scope(self.net.name):
+# 			self.optimizer = tf.train.AdamOptimizier(name = 'adam')
+# 			self.value = tf.placeholder(tf.float32, [None], name = 'y')
+# 			self.loss = tf.losses.mean_squared_error(self.value, self.output_net)
+# 			self.train = self.optimizer.minimize(self.loss)
+
+# 	def fit(self, path):
+# 		feed_dict = {self.input_ph: path['observations'], self.value: path['returns']}
+# 		loss, _ = self.sess.run([self.loss, self.train], feed_dict = feed_dict)
+# 		return loss
+
+# 	def predict(self, path):
+# 		feed_dict 
+'''
