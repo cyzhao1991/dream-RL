@@ -42,7 +42,7 @@ class CartPoleTripleEnv(gym.Env):
 		self.max_force = 10.
 		self.theta_threshold = 3.2
 		self.x_threshold = 3.0
-		self.action_space = spaces.Box(low = -self.max_force, high = self.max_force, shape=(1,))
+		self.action_space = spaces.Box(low = -self.max_force, high = self.max_force, shape=(3,))
 		high = np.array([self.x_threshold * 2, np.finfo(np.float32).max, self.theta_threshold *2, np.finfo(np.float32).max, \
 			self.theta_threshold *2, np.finfo(np.float32).max, self.theta_threshold *2, np.finfo(np.float32).max])
 		self.observation_space = spaces.Box(-high, high)
@@ -96,9 +96,9 @@ class CartPoleTripleEnv(gym.Env):
 
 	def _step(self, action):
 
-		self.j1.addForce(action)
-		self.j2.addTorque(0.)
-		self.j3.addTorque(0.)
+		self.j1.addForce(action[0])
+		self.j2.addTorque(action[1])
+		self.j3.addTorque(action[2])
 		self.j4.addTorque(0.)
 		self.world.step(self.dt)
 		return self._get_obs()
@@ -208,4 +208,17 @@ class CartPoleTripleEnv(gym.Env):
 		self.pole_trans3.set_rotation(state[6])
 
 		return self.viewer.render(return_rgb_array = mode=='rgb_array')
+
+	def cost_function(self, state, action):
+		x, xdot, th, thdot, th2, th2dot, th3, th3dot = state
+		u = action
+		costs = x **2 + angle_normalize(th) ** 2 + angle_normalize(th2) ** 2  + angle_normalize(th3) ** 2 + .001 *u**2 
+		return np.min(costs - 10, 0)
+
+	def if_done(self, state):
+		# return False
+		return not (np.abs(state[0]) < 3. and np.abs(state[3]) < 30 * np.pi/180) and np.abs(state[5]) < 30 * np.pi/180) and np.abs(state[7]) < 30 * np.pi/180)
+
+def angle_normalize(x):
+	return (((x+np.pi)%(2*np.pi)) - np.pi)
 

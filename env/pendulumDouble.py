@@ -157,7 +157,7 @@ class PendulumDoubleEnv(gym.Env):
 		th, thdot, th2, th2dot = state
 		u1, u2 = action
 		costs = angle_normalize(th) ** 2 + .1*thdot**2 + .001 *u1**2 +  angle_normalize(th2) ** 2 + .1*th2dot**2 + .001 *u2**2
-		return costs
+		return np.min(costs - 10, 0)
 
 	def if_done(self, state):
 		return False

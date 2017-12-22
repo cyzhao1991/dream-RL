@@ -74,7 +74,7 @@ class PendulumEnv(gym.Env):
 			self.world.setGravity((0,0,0))
 
 	def _step(self, action):
-		self.j2.addTorque(action)
+		self.j2.addTorque(action[0])
 		self.world.step(self.dt)
 		state = self._get_obs()
 		costs = self.cost_function(state, action)
@@ -130,7 +130,7 @@ class PendulumEnv(gym.Env):
 		th, thdot = state
 		u = action
 		costs = angle_normalize(th) ** 2 + .1*thdot**2 + .001 *u**2
-		return costs
+		return np.min(costs - 10, 0)
 
 	def if_done(self, state):
 		return False
