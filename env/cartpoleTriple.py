@@ -24,19 +24,10 @@ class CartPoleTripleEnv(gym.Env):
 		body.setPosition(pos)
 		M = ode.Mass()
 		M.setCylinderTotal(mass, 2, size[1], size[0])
-		# M.translate( (0., size[0]/2, 0.) )
 		M.translate( (0, size[0]/2, 0.) )
 
 		M.setParameters(M.mass, M.c[0], 0, M.c[2], M.I[0][0], M.I[1][1],M.I[2][2], M.I[0][1], M.I[0][2], M.I[1][2]) #setParameters(mass, cgx, cgy, cgz, I11, I22, I33, I12, I13, I23)
 		body.setMass(M)
-
-	# def create_ee(self, body, pos, mass, radius):
-	# 	body.setPosition(pos)
-	# 	M = ode.Mass()
-	# 	M.setCyliderTotal(mass, 1., size[0], size[1])
-	# 	M.translate((.5, 0., 0.))
-	# 	M.setParameters((M.mass, 0, M.c[1], M.c[2], M.I[0][0], M.I[1][1],M.I[2][2], M.I[0][1], M.I[0][2], M.I[1][2])) #setParameters(mass, cgx, cgy, cgz, I11, I22, I33, I12, I13, I23) 
-	# 	body.setMass(M)
 
 	def __init__(self, gravity = 9.8, mass = 1.0, tau = 0.02, size_box = (0.5, 0.3), size_pole = (1.0, .1)):
 		self.gravity = gravity
@@ -104,7 +95,7 @@ class CartPoleTripleEnv(gym.Env):
 			self.world.setGravity((0,0,0))
 
 	def _step(self, action):
-		# assert self.action_space.contains(action), "action %r (%s) invalid"%(action, type(action))
+
 		self.j1.addForce(action)
 		self.j2.addTorque(0.)
 		self.j3.addTorque(0.)
@@ -217,7 +208,4 @@ class CartPoleTripleEnv(gym.Env):
 		self.pole_trans3.set_rotation(state[6])
 
 		return self.viewer.render(return_rgb_array = mode=='rgb_array')
-
-			# base = rendering.make_capsule(self.size_box[0], self.size_box[1])
-			# base.set_color(.8,.3,.3)
 

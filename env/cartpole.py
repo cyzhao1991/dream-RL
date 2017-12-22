@@ -17,7 +17,6 @@ class CartPoleEnv(gym.Env):
 		M = ode.Mass()
 		M.setBoxTotal(mass, size[0], size[1], 1.) #setBox(mass, lx, ly, lz)
 		M.translate((size[0]/2, size[1]/2 , 0.))
-		# M.setParameters(M.mass, M.c[0], M.c[1], M.c[2], M.I[0][0], M.I[1][1],M.I[2][2], M.I[0][1], M.I[0][2], M.I[1][2]) #setParameters(mass, cgx, cgy, cgz, I11, I22, I33, I12, I13, I23) 
 		M.setParameters(M.mass, 0 ,0 , M.c[2], M.I[0][0], M.I[1][1],M.I[2][2], M.I[0][1], M.I[0][2], M.I[1][2]) #setParameters(mass, cgx, cgy, cgz, I11, I22, I33, I12, I13, I23) 
 
 		body.setMass(M)
@@ -27,17 +26,9 @@ class CartPoleEnv(gym.Env):
 		M = ode.Mass()
 		M.setCylinderTotal(mass, 2, size[1], size[0])
 		M.translate( (0., size[0]/2, 0.) )
-		# M.setParameters(M.mass, M.c[0], M.c[1], M.c[2], M.I[0][0], M.I[1][1],M.I[2][2], M.I[0][1], M.I[0][2], M.I[1][2]) #setParameters(mass, cgx, cgy, cgz, I11, I22, I33, I12, I13, I23)
 		M.setParameters(M.mass, M.c[0], 0, M.c[2], M.I[0][0], M.I[1][1],M.I[2][2], M.I[0][1], M.I[0][2], M.I[1][2]) #setParameters(mass, cgx, cgy, cgz, I11, I22, I33, I12, I13, I23)
 		body.setMass(M)
 
-	# def create_ee(self, body, pos, mass, radius):
-	# 	body.setPosition(pos)
-	# 	M = ode.Mass()
-	# 	M.setCyliderTotal(mass, 1., size[0], size[1])
-	# 	M.translate((.5, 0., 0.))
-	# 	M.setParameters((M.mass, 0, M.c[1], M.c[2], M.I[0][0], M.I[1][1],M.I[2][2], M.I[0][1], M.I[0][2], M.I[1][2])) #setParameters(mass, cgx, cgy, cgz, I11, I22, I33, I12, I13, I23) 
-	# 	body.setMass(M)
 
 	def __init__(self, gravity = 9.8, mass_cart = 1.0, mass_pole = 1.0, tau = 0.02, size_box = (0.5, 0.3), size_pole = (1.0, .1)):
 		self.gravity = gravity
@@ -92,7 +83,6 @@ class CartPoleEnv(gym.Env):
 			self.world.setGravity((0,0,0))
 
 	def _step(self, action):
-		# assert self.action_space.contains(action), "action %r (%s) invalid"%(action, type(action))
 		self.j1.addForce(action[0])
 		self.j2.addTorque(0.)
 		self.world.step(self.dt)
@@ -102,11 +92,8 @@ class CartPoleEnv(gym.Env):
 		return state, -costs, done, {}
 
 	def _reset(self):
-		# ode.CloseODE()
 		del self.world
 		self.__init__(gravity = self.gravity, mass_cart = self.mass_cart, mass_pole = self.mass_pole, tau = self.dt, size_box = self.size_box, size_pole = self.size_pole )
-		# self.body1.setPosition((0.,0.,0.))
-		# self.body2.setPosition(())
 		return self._get_obs()
 
 	def _get_obs(self):
@@ -149,7 +136,6 @@ class CartPoleEnv(gym.Env):
 
 			axle = rendering.make_circle(self.size_pole[1]/2.)
 			axle.set_color(.5,.5,.8)
-			# self.axle_trans = rendering.Transform()
 			axle.add_attr(self.cart_trans)
 			self.viewer.add_geom(axle)
 
@@ -158,23 +144,15 @@ class CartPoleEnv(gym.Env):
 			self.viewer.add_geom(self.track)
 
 		self.cart_trans.set_translation(x1,y1)
-		# self.pole_trans.set_translation(x1,y1)
 		self.pole_trans.set_rotation(state[2] + math.pi/2)
-		# self.axle_trans2.set_translation(x2,y2)
 
 		return self.viewer.render(return_rgb_array = mode=='rgb_array')
-
-			# base = rendering.make_capsule(self.size_box[0], self.size_box[1])
-			# base.set_color(.8,.3,.3)
 
 	def cost_function(self, state, action):
 		x, xdot, th, thdot = state
 		u = action
-		# costs = x **2 + .2*xdot **2 + angle_normalize(th) ** 2 + .1*thdot**2 + .001 *u**2
 		costs = x ** 2 + angle_normalize(th) ** 2 + .001 * u**2
 		return np.min(costs - 10, 0)
-
-		# return -1.
 
 	def if_done(self, state):
 		# return False

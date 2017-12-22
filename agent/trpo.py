@@ -46,10 +46,6 @@ class TRPOagent(Agent):
 			self.fvp = tf.gradients(tf.reduce_sum(flat_grads * self.flat_tangent), self.actor.var_list)
 			self.flat_fvp = flatten_var(self.fvp)
 
-
-		# self.actor_var_list = [v for v in tf.trainable_variables() if v.name.startswith(self.actor.name)]
-		# self.baseline_var_list = [v for v in tf.trainable_variables() if v.name.startswith(self.baseline.name)]
-
 	def get_single_path(self):
 
 		observations = []
@@ -166,7 +162,6 @@ class TRPOagent(Agent):
 				return self.sess.run(self.flat_fvp, feed_dict = feed_dict) + self.pms.cg_damping * p
 
 			g = self.sess.run(self.flat_surr_grad, feed_dict = feed_dict)
-			# print([g, np.amax(g), np.amin(g)])
 			step_gradient = cg(fisher_vector_product, -g, cg_iters = self.pms.cg_iters)
 			sAs = step_gradient.dot( fisher_vector_product(step_gradient) )
 			inv_stepsize = np.sqrt( sAs/(2.*self.pms.max_kl) )
@@ -175,7 +170,7 @@ class TRPOagent(Agent):
 			def loss_function(x):
 				self.sess.run(set_from_flat(self.actor.var_list, x))
 				surr_loss, kl = self.sess.run([self.surr_loss, self.kl], feed_dict = feed_dict)
-				# self.sess.run(set_from_flat(self.actor.var_list, flat_theta_prev))
+
 				return surr_loss, kl
 			if self.pms.linesearch:
 				flat_theta_new = linesearch(loss_function, flat_theta_prev, fullstep_gradient, self.pms.max_backtracks, self.pms.max_kl)

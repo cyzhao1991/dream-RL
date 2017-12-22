@@ -16,8 +16,6 @@ class PendulumEnv(gym.Env):
 		body.setPosition(pos)
 		M = ode.Mass()
 		M.setSphereTotal(1., .2) #setBox(mass, lx, ly, lz)
-		# M.translate((size[0]/2, size[1]/2 , 0.))
-		# M.setParameters(M.mass, M.c[0], M.c[1], M.c[2], M.I[0][0], M.I[1][1],M.I[2][2], M.I[0][1], M.I[0][2], M.I[1][2]) #setParameters(mass, cgx, cgy, cgz, I11, I22, I33, I12, I13, I23) 
 		M.setParameters(M.mass, M.c[0] ,M.c[1] , M.c[2], M.I[0][0], M.I[1][1],M.I[2][2], M.I[0][1], M.I[0][2], M.I[1][2]) #setParameters(mass, cgx, cgy, cgz, I11, I22, I33, I12, I13, I23) 
 		body.setMass(M)
 
@@ -26,17 +24,10 @@ class PendulumEnv(gym.Env):
 		M = ode.Mass()
 		M.setCylinderTotal(mass, 2, size[1], size[0])
 		M.translate( (0., size[0]/2, 0.) )
-		# M.setParameters(M.mass, M.c[0], M.c[1], M.c[2], M.I[0][0], M.I[1][1],M.I[2][2], M.I[0][1], M.I[0][2], M.I[1][2]) #setParameters(mass, cgx, cgy, cgz, I11, I22, I33, I12, I13, I23)
+
 		M.setParameters(M.mass, M.c[0], 0, M.c[2], M.I[0][0], M.I[1][1],M.I[2][2], M.I[0][1], M.I[0][2], M.I[1][2]) #setParameters(mass, cgx, cgy, cgz, I11, I22, I33, I12, I13, I23)
 		body.setMass(M)
 
-	# def create_ee(self, body, pos, mass, radius):
-	# 	body.setPosition(pos)
-	# 	M = ode.Mass()
-	# 	M.setCyliderTotal(mass, 1., size[0], size[1])
-	# 	M.translate((.5, 0., 0.))
-	# 	M.setParameters((M.mass, 0, M.c[1], M.c[2], M.I[0][0], M.I[1][1],M.I[2][2], M.I[0][1], M.I[0][2], M.I[1][2])) #setParameters(mass, cgx, cgy, cgz, I11, I22, I33, I12, I13, I23) 
-	# 	body.setMass(M)
 
 	def __init__(self, gravity = 9.8, mass = 1.0, tau = 0.02, size_pole = (1.0, .1)):
 		self.gravity = gravity
@@ -83,7 +74,6 @@ class PendulumEnv(gym.Env):
 			self.world.setGravity((0,0,0))
 
 	def _step(self, action):
-		# assert self.action_space.contains(action), "action %r (%s) invalid"%(action, type(action))
 		self.j2.addTorque(action)
 		self.world.step(self.dt)
 		state = self._get_obs()

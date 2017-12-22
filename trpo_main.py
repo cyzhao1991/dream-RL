@@ -3,9 +3,6 @@ import tensorflow as tf
 import numpy as np
 import scipy.signal
 import sys, time, os, gym, shelve, argparse
-# from utils.krylov import cg
-# from utils.utils import *
-# from agent.agent import Agent
 
 from actor.actor import GaussianActor
 from agent.trpo import TRPOagent
@@ -16,7 +13,6 @@ from utils.paras import Paras_base
 
 def main(gpu_num, exp_num, env = None):
 	dir_name = 'Data/checkpoint/'
-	# dir_name = '/disk/scratch/chenyang/Data/trpo_stl/exp%i/'%(exp_num)
 	if not os.path.isdir(dir_name):
 		os.makedirs(dir_name)
 
